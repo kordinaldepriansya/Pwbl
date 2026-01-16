@@ -17,6 +17,7 @@ export default async function HomePage() {
 
   return (
     <div className="bg-white pb-10">
+      {/* Banner / Header */}
       <div className="relative overflow-hidden bg-slate-900 text-white py-16 mb-10">
         <div className="container mx-auto px-4 md:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
@@ -29,6 +30,7 @@ export default async function HomePage() {
         </div>
       </div>
 
+      {/* Grid Produk */}
       <div className="container mx-auto px-4 md:px-8">
         <h2 className="text-3xl font-bold mb-8 text-slate-900">Menu Pilihan</h2>
         
@@ -39,12 +41,14 @@ export default async function HomePage() {
               key={product.id} 
               className="group bg-white rounded-xl border border-gray-100 p-3 space-y-4 hover:shadow-xl transition-all duration-300 cursor-pointer"
             >
+              {/* Gambar (Placeholder) */}
               <div className="aspect-square rounded-xl bg-gray-100 relative overflow-hidden">
                  <div className="w-full h-full flex items-center justify-center text-gray-400">
                     No Image
                  </div>
               </div>
 
+              {/* Detail Produk */}
               <div>
                 <p className="font-semibold text-lg text-black group-hover:text-orange-600 transition">
                   {product.name}
