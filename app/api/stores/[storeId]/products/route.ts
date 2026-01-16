@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import db from "@/lib/db";
 import { z } from "zod";
 
+
 const createProductSchema = z.object({
   name: z.string().min(1, "Nama produk wajib diisi"),
   sku: z.string().optional().nullable(),
@@ -13,39 +14,36 @@ const createProductSchema = z.object({
   isActive: z.coerce.boolean().optional().default(true),
 });
 
+
 export async function GET(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
-
-    const store = await db.store.findFirst({
-      where: { id: params.storeId, userId },
-      select: { id: true },
-    });
-    if (!store) return new NextResponse("Forbidden", { status: 403 });
-
     const { searchParams } = new URL(req.url);
     const q = (searchParams.get("q") ?? "").trim();
-    const categoryIdParam = (searchParams.get("categoryId") ?? "").trim(); // ✅
+    const categoryIdParam = (searchParams.get("categoryId") ?? "").trim();
 
+    
     const categoryFilter =
       !categoryIdParam || categoryIdParam === "all"
         ? {}
         : categoryIdParam === "none"
-          ? { categoryId: null }
-          : { categoryId: categoryIdParam };
+        ? { categoryId: null }
+        : { categoryId: categoryIdParam };
 
+    
     const products = await db.product.findMany({
       where: {
         storeId: params.storeId,
-        ...(q ? { name: { contains: q, mode: "insensitive" } } : {}),
+        ...(q ? { name: { contains: q, mode: "insensitive" } } : {}), 
         ...categoryFilter,
+        isActive: true, 
       },
       orderBy: { createdAt: "desc" },
-      include: { category: { select: { id: true, name: true } } },
+      include: { 
+        category: { select: { id: true, name: true } } 
+      },
     });
 
     return NextResponse.json(products);
@@ -55,20 +53,25 @@ export async function GET(
   }
 }
 
+
 export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
   try {
     const { userId } = await auth();
+    
+    // Cek Login
     if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
+    // Cek Kepemilikan Toko
     const store = await db.store.findFirst({
       where: { id: params.storeId, userId },
       select: { id: true },
     });
     if (!store) return new NextResponse("Forbidden", { status: 403 });
 
+    // Validasi Input
     const body = await req.json();
     const parsed = createProductSchema.safeParse(body);
 
@@ -79,10 +82,9 @@ export async function POST(
       );
     }
 
-    const { name, sku, description, categoryId, price, stock, isActive } =
-      parsed.data;
+    const { name, sku, description, categoryId, price, stock, isActive } = parsed.data;
 
-    // ✅ Validasi categoryId (kalau dikirim) harus milik store yang sama
+    // Validasi apakah Category ID milik toko ini juga?
     if (categoryId) {
       const category = await db.category.findFirst({
         where: { id: categoryId, storeId: params.storeId },
@@ -93,6 +95,7 @@ export async function POST(
       }
     }
 
+    // Simpan Produk Baru
     const product = await db.product.create({
       data: {
         storeId: params.storeId,
