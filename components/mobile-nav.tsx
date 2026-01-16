@@ -8,10 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-export function MobileNav() {
-  const pathname = usePathname();
-  const params = useParams();
-  const storeId = String(params.storeId);
+
 
   const routes = [
     { href: `/${storeId}`, label: "Overview" },
