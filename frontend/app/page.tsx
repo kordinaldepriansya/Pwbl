@@ -1,66 +1,76 @@
-import Image from "next/image";
+import { formatter } from "../lib/utils";
 
-export default function Home() {
+async function getProducts() {
+  const res = await fetch('http://localhost:3000/api/stores/cmkh7xpj90000hymlqvafkd9u/products', {
+    cache: 'no-store'
+  });
+
+  if (!res.ok) {
+    throw new Error('Gagal mengambil data produk');
+  }
+
+  return res.json();
+}
+
+export default async function HomePage() {
+  const products = await getProducts();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="bg-white pb-10">
+      <div className="relative overflow-hidden bg-slate-900 text-white py-16 mb-10">
+        <div className="container mx-auto px-4 md:px-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
+            Toko Dinal
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
+            Nikmati kelezatan masakan rumahan dengan bahan berkualitas terbaik. 
+            Siap mengenyangkan perut Anda kapan saja.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      <div className="container mx-auto px-4 md:px-8">
+        <h2 className="text-3xl font-bold mb-8 text-slate-900">Menu Pilihan</h2>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          
+          {products.map((product: any) => (
+            <div 
+              key={product.id} 
+              className="group bg-white rounded-xl border border-gray-100 p-3 space-y-4 hover:shadow-xl transition-all duration-300 cursor-pointer"
+            >
+              <div className="aspect-square rounded-xl bg-gray-100 relative overflow-hidden">
+                 <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    No Image
+                 </div>
+              </div>
+
+              <div>
+                <p className="font-semibold text-lg text-black group-hover:text-orange-600 transition">
+                  {product.name}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {product.category?.name || "Menu Umum"}
+                </p>
+              </div>
+
+              {/* Harga */}
+              <div className="flex items-center justify-between">
+                <div className="font-bold text-lg text-slate-900">
+                  {formatter.format(product.price)}
+                </div>
+              </div>
+            </div>
+          ))}
+
         </div>
-      </main>
+
+        {products.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-60 space-y-4 text-gray-500">
+            <p className="text-xl">Belum ada menu yang tersedia hari ini.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
