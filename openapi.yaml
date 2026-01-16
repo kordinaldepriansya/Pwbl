@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: Store API
+  version: 1.0.0
+  description: Public & Admin API for Storefront + Admin Dashboard
+servers:
+  - url: http://localhost:3000
+    description: Local backend
+
+tags:
+  - name: Public
+    description: Public API (tanpa login, read-only)
+
+paths:
+  /api/public/stores/{storeId}:
+    get:
+      tags: [Public]
+      summary: Get store by id
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+          example: cmk2ebrs90000d3q0tm5r6hwa
+      responses:
+        "200":
+          description: Store found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Store"
+              examples:
+                success:
+                  value:
+                    id: cmk2ebrs90000d3q0tm5r6hwa
+                    name: toko dinall
+        "404":
+          description: Store not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                notFound:
+                  value:
+                    message: Store not found
+                    storeId: cmk2ebrs90000d3q0tm5r6hwa
+
+  /api/public/stores/{storeId}/products:
+    get:
+      tags: [Public]
+      summary: List active products of a store
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+          example: cmk2ebrs90000d3q0tm5r6hwa
+      responses:
+        "200":
+          description: Product list (can be empty)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+              examples:
+                oneProduct:
+                  value:
+                    - id: cmk47ffd0e00183qax5pywrha
+                      name: kopi susu
+                      price: 12
+                      stock: 3
+                      description: null
+                      isActive: true
+
+components:
+  schemas:
+    Store:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    Product:
+      type: object
+      required: [id, name, price, stock, isActive]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: integer
+          description: Price in smallest unit (sesuai DB kamu)
+        stock:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        storeId:
+          type: string
+          nullable: true
