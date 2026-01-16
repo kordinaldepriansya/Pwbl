@@ -8,3 +8,12 @@ import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandSearch } from "@/components/command-search";
 import { Separator } from "@/components/ui/separator";
+
+const Navbar = async () => {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  const stores = await db.store.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
