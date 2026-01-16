@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { Menu } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
-
+import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
