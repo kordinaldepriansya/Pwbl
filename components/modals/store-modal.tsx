@@ -28,10 +28,9 @@ export const StoreModal = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      // Mengirim data ke API Route yang Anda punya di app/api/stores/route.ts
+
       const response = await axios.post("/api/stores", values);
-      
-      // Mengarahkan user ke dashboard toko yang baru dibuat
+
       window.location.assign(`/${response.data.id}`);
     } catch (error) {
       console.log("Something went wrong");
