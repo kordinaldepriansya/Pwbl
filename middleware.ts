@@ -4,24 +4,22 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
-  "/store(.*)",
-  "/api/health(.*)",
-  "/api/debug(.*)",
-  "/api/public(.*)",
+  "/api(.*)", 
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const path = req.nextUrl.pathname;
+  if (isPublicRoute(req)) {
+    return;
+  }
 
-
-  if (path.startsWith("/api/admin")) return;
-
-  if (isPublicRoute(req)) return;
-
- 
   await auth.protect();
 });
 
 export const config = {
-  matcher: ["/((?!_next|.*\\..*).*)", "/(api|trpc)(.*)"],
+  matcher: [
+
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+
+    '/(api|trpc)(.*)',
+  ],
 };
