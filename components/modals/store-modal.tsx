@@ -1,0 +1,81 @@
+"use client";
+
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import axios from "axios";
+
+import { Modal } from "@/components/ui/modal";
+import { useStoreModal } from "@/hooks/use-store-modal";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+const formSchema = z.object({
+  name: z.string().min(1, "Nama toko minimal 1 karakter"),
+});
+
+export const StoreModal = () => {
+  const storeModal = useStoreModal();
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { name: "" },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setLoading(true);
+      // Mengirim data ke API Route yang Anda punya di app/api/stores/route.ts
+      const response = await axios.post("/api/stores", values);
+      
+      // Mengarahkan user ke dashboard toko yang baru dibuat
+      window.location.assign(`/${response.data.id}`);
+    } catch (error) {
+      console.log("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal
+      title="Buat Toko"
+      description="Tambahkan toko baru untuk mengelola produk dan kategori."
+      isOpen={storeModal.isOpen}
+      onClose={storeModal.onClose}
+    >
+      <div>
+        <div className="space-y-4 py-2 pb-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nama</FormLabel>
+                    <FormControl>
+                      <Input disabled={loading} placeholder="Nama Toko Anda" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="pt-6 space-x-2 flex items-center justify-end w-full">
+                <Button disabled={loading} variant="outline" onClick={storeModal.onClose}>
+                  Batal
+                </Button>
+                <Button disabled={loading} type="submit">
+                  Lanjutkan
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </div>
+    </Modal>
+  );
+};
