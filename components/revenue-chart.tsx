@@ -1,6 +1,14 @@
 "use client";
 
-
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 
 type Point = { name: string; total: number };
 
