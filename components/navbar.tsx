@@ -4,3 +4,4 @@ import { redirect } from "next/navigation";
 import db from "@/lib/db";
 
 import StoreSwitcher from "@/components/store-switcher";
+import { MobileNav } from "@/components/mobile-nav";
