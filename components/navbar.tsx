@@ -17,3 +17,29 @@ const Navbar = async () => {
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
+
+  return (
+    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-6">
+        {/* Mobile menu */}
+        <MobileNav />
+
+        
+        <div className="hidden md:flex items-center gap-3">
+          <span className="text-sm font-semibold tracking-tight">Admin</span>
+          <Separator orientation="vertical" className="h-6" />
+        </div>
+
+        <StoreSwitcher items={stores} />
+
+        {/* Search (desktop) */}
+        <CommandSearch />
+
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          <UserButton afterSignOutUrl="/" />
+        </div>
+      </div>
+    </header>
+  );
+};
